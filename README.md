@@ -47,7 +47,8 @@ the exact shades.
 | HTML | formatting tags (`<b>`, `<kbd>`, `<br>`, `<img>`, `<a>`, `<details>`…) take effect, comments disappear, unknown tags are shown dim |
 
 When the output is not a terminal, colours are off and the text comes out
-laid out but plain, at the width of `COLUMNS` or 80 columns.
+laid out but plain — still at the terminal's width if there is one on
+standard error, otherwise at `COLUMNS` or 80 columns.
 
 ## Options
 
