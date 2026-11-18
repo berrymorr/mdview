@@ -4,7 +4,7 @@
 //! Everything uses the 16 palette colours, so the terminal's own colour
 //! scheme decides the exact shades. Italic is a colour here rather than the
 //! SGR italic attribute, which many terminals cannot show; `--italic` adds
-//! the attribute on top.
+//! the attribute on top. `--colors` changes any of the styles by name.
 
 use crate::style::*;
 
@@ -45,9 +45,8 @@ pub struct Theme {
     pub alerts: [Style; 5],
 }
 
-impl Theme {
-    pub fn new(italic: bool) -> Theme {
-        let emph = Style::fg(GREEN);
+impl Default for Theme {
+    fn default() -> Theme {
         Theme {
             headings: [
                 Heading {
@@ -76,7 +75,7 @@ impl Theme {
                 },
             ],
             strong: Style::PLAIN.bold(),
-            emph: if italic { emph.italic() } else { emph },
+            emph: Style::fg(GREEN),
             strike: Style::PLAIN.dim().strike(),
             code: Style::fg(YELLOW),
             mark: Style::fg(BLACK).on(YELLOW),
@@ -107,6 +106,110 @@ impl Theme {
                 Style::fg(BRIGHT_YELLOW),
                 Style::fg(BRIGHT_RED),
             ],
+        }
+    }
+}
+
+impl Theme {
+    /// Every style `--colors` can set, under the name it is set by.
+    pub fn styles(&mut self) -> Vec<(&'static str, &mut Style)> {
+        let Theme {
+            headings,
+            strong,
+            emph,
+            strike,
+            code,
+            mark,
+            kbd,
+            link,
+            url,
+            image,
+            footnote,
+            math,
+            html,
+            quote_bar,
+            quote_text,
+            list_marker,
+            task_open,
+            task_done,
+            rule,
+            table_border,
+            table_header,
+            code_frame,
+            code_label,
+            code_text,
+            term,
+            file_header,
+            alerts: [note, tip, important, warning, caution],
+        } = self;
+        const HEADINGS: [(&str, &str); 6] = [
+            ("h1", "h1-rule"),
+            ("h2", "h2-rule"),
+            ("h3", "h3-rule"),
+            ("h4", "h4-rule"),
+            ("h5", "h5-rule"),
+            ("h6", "h6-rule"),
+        ];
+        let mut styles = Vec::new();
+        for (heading, (name, rule_name)) in headings.iter_mut().zip(HEADINGS) {
+            styles.push((name, &mut heading.text));
+            if let Some((_, style)) = &mut heading.rule {
+                styles.push((rule_name, style));
+            }
+        }
+        styles.extend([
+            ("strong", strong),
+            ("emph", emph),
+            ("strike", strike),
+            ("code", code),
+            ("mark", mark),
+            ("kbd", kbd),
+            ("link", link),
+            ("url", url),
+            ("image", image),
+            ("footnote", footnote),
+            ("math", math),
+            ("html", html),
+            ("quote-bar", quote_bar),
+            ("quote-text", quote_text),
+            ("list-marker", list_marker),
+            ("task-open", task_open),
+            ("task-done", task_done),
+            ("rule", rule),
+            ("table-border", table_border),
+            ("table-header", table_header),
+            ("code-frame", code_frame),
+            ("code-label", code_label),
+            ("code-text", code_text),
+            ("term", term),
+            ("file-header", file_header),
+            ("note", note),
+            ("tip", tip),
+            ("important", important),
+            ("warning", warning),
+            ("caution", caution),
+        ]);
+        styles
+    }
+
+    /// The names `--colors` knows.
+    pub fn names() -> Vec<&'static str> {
+        Theme::default()
+            .styles()
+            .into_iter()
+            .map(|(name, _)| name)
+            .collect()
+    }
+
+    /// Gives the style called `name` a new look; false if there is none by
+    /// that name.
+    pub fn set(&mut self, name: &str, style: Style) -> bool {
+        match self.styles().into_iter().find(|(known, _)| *known == name) {
+            Some((_, slot)) => {
+                *slot = style;
+                true
+            }
+            None => false,
         }
     }
 }
@@ -163,3 +266,28 @@ pub const GLYPHS: Glyphs = Glyphs {
         line: '─',
     },
 };
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn every_style_has_its_own_name() {
+        let names = Theme::names();
+        let mut unique = names.clone();
+        unique.sort_unstable();
+        unique.dedup();
+        assert_eq!(unique.len(), names.len());
+        assert!(names.contains(&"h1-rule") && !names.contains(&"h3-rule"));
+    }
+
+    #[test]
+    fn a_style_is_set_by_name() {
+        let mut theme = Theme::default();
+        assert!(theme.set("caution", Style::fg(GREEN)));
+        assert!(theme.set("h2-rule", Style::PLAIN.dim()));
+        assert_eq!(theme.alerts[4], Style::fg(GREEN));
+        assert_eq!(theme.headings[1].rule, Some(('─', Style::PLAIN.dim())));
+        assert!(!theme.set("h7", Style::PLAIN));
+    }
+}

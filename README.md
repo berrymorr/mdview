@@ -22,7 +22,7 @@ description lists. Paragraphs are re-wrapped to the width of the terminal.
 Markup the terminal cannot draw becomes colour: *italic* text, for one, is
 green rather than slanted (`--italic` adds the slant for terminals that can
 draw it). Colours are the terminal's own 16, so its colour scheme decides
-the exact shades.
+the exact shades, and each of them can be changed (see [Colours](#colours)).
 
 | Markdown | Shown as |
 |---|---|
@@ -59,7 +59,8 @@ standard error, otherwise at `COLUMNS` or 80 columns.
 | `--color auto\|always\|never` | `auto` colours only a terminal, and not when `NO_COLOR` is set. |
 | `-w`, `--width COLUMNS` | lay the text out in this many columns instead of the terminal's width. |
 | `--theme NAME`, `--list-themes` | syntax theme for code blocks; by default `MDVIEW_THEME`, then `BAT_THEME`, then `Monokai Extended`. |
-| `--hyperlinks` | make links clickable (OSC 8), for terminals that support it. |
+| `--colors ELEMENT=STYLE`, `--list-colors` | the look of one part of the document, such as `emph=cyan`; list them all (see [Colours](#colours)). |
+| `--hyperlinks` | make links clickable (OSC 8), for terminals that support it; one that does not may print the link codes as text. |
 | `--italic` | draw emphasis slanted as well as coloured. |
 | `--no-config` | ignore the configuration file. |
 
@@ -74,6 +75,85 @@ one or more per line, `#` starts a comment. The command line wins over it.
 --theme="Monokai Extended Light"
 --hyperlinks
 ```
+
+## Colours
+
+Any part of the document can be given its own look with
+`--colors ELEMENT=STYLE`, repeated for as many parts as needed. The
+configuration file is the place for it:
+
+```sh
+# ~/.config/mdview/config
+--colors emph=cyan
+--colors 'h1=bold brightred'
+--colors 'mark=black brightyellow'
+--colors code-frame=normal         # plain instead of dim
+```
+
+A style is written the way git writes colours in its configuration: words
+in any order, separated by spaces or commas.
+
+- Attributes: `bold`, `dim`, `italic`, `ul` (underline), `reverse`,
+  `strike`.
+- Colours: the first is the text's, the second the background's. A colour is
+  `black`, `red`, `green`, `yellow`, `blue`, `magenta`, `cyan` or `white`;
+  the same with `bright` in front, as in `brightred`; a number from 0 to 255
+  (0–15 are those sixteen, the rest the 256-colour palette); `#rrggbb`; or
+  `normal`, the terminal's own colour, so that `normal blue` sets only the
+  background.
+
+A style replaces the element's whole look: `h1=red` is red and no longer
+bold. `normal` alone, or nothing after the `=`, leaves the element plain.
+A `#rrggbb` colour goes to the terminal as it is only when `COLORTERM` is
+`truecolor` or `24bit`; otherwise it becomes the nearest of the 256 palette
+colours, as colours in code blocks do — a terminal without 24-bit colour
+would misread it.
+
+`mdview --list-colors` prints every element as `ELEMENT=STYLE`, each line
+in its own style and with the configuration applied: it shows how the
+styles come out in your terminal, and the lines can be copied into the
+configuration file.
+
+| Element | Default | What it colours |
+|---|---|---|
+| `h1` | `bold brightmagenta` | level 1 headings |
+| `h1-rule` | `magenta` | the line under them |
+| `h2` | `bold brightblue` | level 2 headings |
+| `h2-rule` | `blue` | the line under them |
+| `h3` | `bold brightcyan` | level 3 headings |
+| `h4` | `bold brightgreen` | level 4 headings |
+| `h5` | `bold brightyellow` | level 5 headings |
+| `h6` | `bold` | level 6 headings |
+| `strong` | `bold` | `**bold**` |
+| `emph` | `green` | `*italic*` |
+| `strike` | `dim strike` | `~~struck~~` |
+| `code` | `yellow` | `` `code` `` |
+| `mark` | `black yellow` | `<mark>` |
+| `kbd` | `reverse` | `<kbd>` |
+| `link` | `ul brightblue` | the text of a link |
+| `url` | `dim` | the address after a link or an image |
+| `image` | `magenta` | `[image: …]` |
+| `footnote` | `cyan` | footnote references, `[1]` |
+| `math` | `magenta` | `$math$` and math blocks |
+| `html` | `dim` | HTML tags shown as they are |
+| `quote-bar` | `dim` | the bar left of a block quote |
+| `quote-text` | `normal` | the text in a block quote |
+| `list-marker` | `yellow` | bullets and numbers |
+| `task-open` | `dim` | `☐` |
+| `task-done` | `green` | `☑` |
+| `rule` | `dim` | `---`, and the line above the footnotes |
+| `table-border` | `dim` | the lines of a table |
+| `table-header` | `bold` | its header row |
+| `code-frame` | `dim` | the frame around a code block |
+| `code-label` | `dim` | the language named in the frame |
+| `code-text` | `normal` | code that is not highlighted |
+| `term` | `bold` | the terms of a description list |
+| `file-header` | `bold reverse` | the name above each file when there are several |
+| `note` | `brightblue` | `> [!NOTE]`: the bar and the title |
+| `tip` | `brightgreen` | `> [!TIP]` |
+| `important` | `brightmagenta` | `> [!IMPORTANT]` |
+| `warning` | `brightyellow` | `> [!WARNING]` |
+| `caution` | `brightred` | `> [!CAUTION]` |
 
 ## Building
 

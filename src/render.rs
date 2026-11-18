@@ -19,13 +19,15 @@ pub struct Settings {
     pub width: usize,
     /// Emit OSC 8 hyperlinks.
     pub hyperlinks: bool,
-    /// Draw emphasis with the italic attribute as well as its colour.
+    /// Let code themes draw italics.
     pub italic: bool,
     /// The terminal takes 24-bit colours (otherwise code colours are
     /// mapped to the 256-colour palette).
     pub true_color: bool,
     /// Syntax theme for code blocks.
     pub code_theme: String,
+    /// How the markup looks.
+    pub theme: Theme,
 }
 
 /// The Markdown dialect: GitHub's, which is what most files are written for.
@@ -51,7 +53,7 @@ pub fn render(markdown: &str, settings: &Settings) -> Vec<Line> {
     let root = parse_document(&arena, markdown, &options());
     let mut renderer = Renderer {
         settings,
-        theme: Theme::new(settings.italic),
+        theme: &settings.theme,
         glyphs: &GLYPHS,
         highlighter: None,
         base: Style::PLAIN,
@@ -63,7 +65,7 @@ pub fn render(markdown: &str, settings: &Settings) -> Vec<Line> {
 
 struct Renderer<'s> {
     settings: &'s Settings,
-    theme: Theme,
+    theme: &'s Theme,
     glyphs: &'static Glyphs,
     /// Loaded on the first code block that names a language.
     highlighter: Option<Highlighter>,

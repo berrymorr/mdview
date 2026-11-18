@@ -6,6 +6,9 @@ use std::path::PathBuf;
 
 use clap::{Parser, ValueEnum};
 
+use crate::style::Style;
+use crate::theme::Theme;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq, ValueEnum)]
 pub enum When {
     Auto,
@@ -22,7 +25,8 @@ pub enum When {
     after_help = "Reads standard input when no FILE is given or FILE is '-'.\n\n\
                   Environment: MDVIEW_PAGER or PAGER (the pager), MDVIEW_THEME or BAT_THEME \
                   (theme for code blocks), NO_COLOR, MDVIEW_CONFIG_PATH.\n\
-                  Configuration: ~/.config/mdview/config holds default arguments, one per line.",
+                  Configuration: ~/.config/mdview/config holds default arguments, one per line \
+                  (--colors among them).",
     args_override_self = true
 )]
 pub struct Args {
@@ -62,6 +66,18 @@ pub struct Args {
     #[arg(long)]
     pub list_themes: bool,
 
+    /// The look of one part of the document, as ELEMENT=STYLE: 'emph=cyan',
+    /// 'h1=bold brightred', 'mark=black yellow'. STYLE is written as git writes
+    /// colours: attributes (bold, dim, italic, ul, reverse, strike) and up to two
+    /// colours, the text's and the background's. Repeat it for more elements;
+    /// --list-colors shows them all.
+    #[arg(long, value_name = "ELEMENT=STYLE", value_parser = color_setting)]
+    pub colors: Vec<(&'static str, Style)>,
+
+    /// List the elements --colors can change, each in its current style.
+    #[arg(long)]
+    pub list_colors: bool,
+
     /// Make links clickable (OSC 8 hyperlinks), for terminals that support them.
     #[arg(long, overrides_with = "no_hyperlinks")]
     pub hyperlinks: bool,
@@ -98,6 +114,20 @@ pub fn parse() -> Args {
     }
     argv.extend(given);
     Args::parse_from(argv)
+}
+
+/// Reads one `--colors` value.
+fn color_setting(value: &str) -> Result<(&'static str, Style), String> {
+    let (name, spec) = value
+        .split_once('=')
+        .ok_or("expected ELEMENT=STYLE, such as 'emph=cyan'")?;
+    let name = name.trim().to_ascii_lowercase();
+    let Some(name) = Theme::names().into_iter().find(|known| *known == name) else {
+        return Err(format!(
+            "there is no element '{name}' (--list-colors shows them all)"
+        ));
+    };
+    Ok((name, Style::parse(spec)?))
 }
 
 fn config_path() -> Option<PathBuf> {
@@ -140,6 +170,31 @@ mod tests {
                 "100",
                 "--italic"
             ]
+        );
+    }
+
+    #[test]
+    fn colors_add_up_in_order() {
+        let args = Args::parse_from([
+            "mdview",
+            "--colors=emph=cyan",
+            "--colors",
+            "H1=bold red",
+            "--colors=emph=magenta",
+        ]);
+        let names: Vec<&str> = args.colors.iter().map(|(name, _)| *name).collect();
+        assert_eq!(names, ["emph", "h1", "emph"]);
+        assert_eq!(args.colors[2].1, Style::parse("magenta").unwrap());
+    }
+
+    #[test]
+    fn colors_name_a_known_element() {
+        assert!(color_setting("emph").is_err());
+        assert!(color_setting("h7=red").is_err());
+        assert!(color_setting("emph=blod").is_err());
+        assert_eq!(
+            color_setting("code-frame=").unwrap(),
+            ("code-frame", Style::PLAIN)
         );
     }
 

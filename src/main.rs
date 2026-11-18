@@ -13,6 +13,7 @@ use std::path::{Path, PathBuf};
 
 use cli::When;
 use text::Line;
+use theme::Theme;
 
 fn main() {
     let code = match run() {
@@ -54,13 +55,38 @@ fn run() -> Result<i32, String> {
         (_, When::Auto) => stdout_is_tty,
     };
 
+    let true_color = std::env::var("COLORTERM").is_ok_and(|v| v == "truecolor" || v == "24bit");
+    let mut theme = Theme::default();
+    for &(name, style) in &args.colors {
+        theme.set(name, style);
+    }
+    if args.italic {
+        theme.emph = theme.emph.italic();
+    }
+
+    if args.list_colors {
+        let lines = theme
+            .styles()
+            .into_iter()
+            .map(|(name, style)| Line::plain(format!("{name}={style}"), fit(*style, true_color)))
+            .collect();
+        let mut list = String::new();
+        text::write_lines(lines, color, &mut list);
+        output::emit(&list, false, false, None)?;
+        return Ok(0);
+    }
+
+    for (_, style) in theme.styles() {
+        *style = fit(*style, true_color);
+    }
     let width = args.width.map_or_else(terminal_width, usize::from);
     let settings = render::Settings {
         width,
         hyperlinks: color && args.hyperlinks,
         italic: args.italic,
-        true_color: std::env::var("COLORTERM").is_ok_and(|v| v == "truecolor" || v == "24bit"),
+        true_color,
         code_theme: code_theme(args.theme.as_deref()),
+        theme,
     };
 
     let inputs: Vec<Option<PathBuf>> = if args.files.is_empty() {
@@ -90,9 +116,9 @@ fn run() -> Result<i32, String> {
         };
         let mut lines = render::render(&markdown, &settings);
         if several {
-            let theme = theme::Theme::new(false);
-            let mut header = Line::plain(format!(" {name} "), theme.file_header);
-            header.pad_to(width, theme.file_header);
+            let style = settings.theme.file_header;
+            let mut header = Line::plain(format!(" {name} "), style);
+            header.pad_to(width, style);
             let mut block = vec![header, Line::new()];
             if shown > 0 {
                 block.insert(0, Line::new());
@@ -110,6 +136,16 @@ fn run() -> Result<i32, String> {
         args.pager.as_deref(),
     )?;
     Ok(if failed { 1 } else { 0 })
+}
+
+/// The style as the terminal can draw it: 24-bit colours only where
+/// COLORTERM says the terminal takes them, as bat decides it for code.
+fn fit(style: style::Style, true_color: bool) -> style::Style {
+    if true_color {
+        style
+    } else {
+        style.to_256_colors()
+    }
 }
 
 /// The file's text, or standard input's for `None`: UTF-8 (invalid bytes
