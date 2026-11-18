@@ -1,0 +1,154 @@
+┌─ front matter ──────────────
+│ title: mdview showcase
+│ tags: [markdown, terminal]
+└─────────────────────────────
+
+Heading level 1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Paragraph text with bold,
+italic, bold italic,
+strikethrough, inline code and
+a link
+(https://example.com/docs).
+Bare addresses become links
+too:
+https://github.com/kivikakk/co
+mrak and mail@example.com. A
+footnote reference[1] and
+inline math e^{i\pi} + 1 = 0.
+
+Heading level 2
+──────────────────────────────
+
+Heading level 3
+
+Heading level 4
+
+Heading level 5
+
+Heading level 6
+
+Setext heading
+──────────────────────────────
+
+Lists
+──────────────────────────────
+
+• First item
+• Second item, long enough to
+  wrap around at the edge of
+  the terminal so that the
+  hanging indent shows
+  ◦ Nested item
+    ▪ Deeper item
+• Third item
+
+1. One
+2. Two
+   1. Two point one
+3. Three
+
+☐ An open task
+☑ A finished task
+
+A loose list:
+
+1. First paragraph.
+
+   Second paragraph of the
+   same item.
+
+2. Next item.
+
+Quotes and alerts
+──────────────────────────────
+
+│ A quote with emphasis and
+│ code.
+│
+│ │ A nested quote.
+
+┃ Note
+┃ Useful information.
+
+┃ Tip
+┃ Helpful advice.
+
+┃ Important
+┃ Key information.
+
+┃ Warning
+┃ Urgent information that
+┃ needs attention.
+
+┃ Caution
+┃ Advice about risks.
+
+Code
+──────────────────────────────
+
+┌─ rust ──────────────────────
+│ fn main() {
+│     let name = "world";
+│     println!("Hello, {name}!
+│ "); // a comment
+│ }
+└─────────────────────────────
+
+┌─────────────────────────────
+│ an indented code block
+│ has no language
+└─────────────────────────────
+
+┌─────────────────────────────
+│ a fenced block without a lan
+│ guage
+└─────────────────────────────
+
+Table
+──────────────────────────────
+
+┌──────┬────────┬────────┐
+│ Left │ Center │  Right │
+├──────┼────────┼────────┤
+│ a    │   b    │      c │
+│ code │  bold  │ italic │
+└──────┴────────┴────────┘
+
+Other markup
+──────────────────────────────
+
+Term
+    The definition of the
+    term.
+
+A line with a hard break
+continues here.
+
+Keys:  Ctrl + C , H_2O, x^2,
+marked, underlined.
+
+[image: A screenshot]
+(docs/screenshot.png)
+
+[image: Build status]
+(https://ci.example.com/mdview
+)
+
+▸ Click to expand
+
+Hidden content.
+
+┌─ math ──────────────────────
+│ \int_0^1 x^2\,dx = \frac{1}{
+│ 3}
+└─────────────────────────────
+
+Wide and non-Latin text:
+Привет, мир! 日本語のテキスト.
+
+──────────────────────────────
+
+──────────
+[1] The footnote text.

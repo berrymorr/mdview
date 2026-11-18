@@ -1,0 +1,54 @@
+A very long word:
+Pneumonoultramicroscopicsilicovolcanocon
+iosis-and-more-text-that-cannot-break.
+
+• level 1
+  ◦ level 2
+    ▪ level 3
+      • level 4 cycles back to the first
+        bullet
+
+ 8. eight
+ 9. nine
+10. ten
+
+5) a parenthesis delimiter
+6) and the next number
+
+☐ a task in a star list
+
+│ A quote with a list:
+│
+│ • item
+│ • item
+│
+│ ┌─ sh ────────────────────────────────
+│ │ echo "code in a quote"
+│ └─────────────────────────────────────
+
+Text with a <placeholder> tag, an ©
+entity and *escaped* stars.
+
+[image: Logo] (logo.png)
+Centered caption & more
+
+A  B
+1  2
+
+┌───────────────┐
+│ only a header │
+└───────────────┘
+
+┌──────────────────────────────┬───────┐
+│ a                            │ b     │
+├──────────────────────────────┼───────┤
+│ a cell with a long text that │ short │
+│ has to wrap inside its       │       │
+│ column                       │       │
+└──────────────────────────────┴───────┘
+
+┌───────────────────────────────────────
+│     tab-indented code
+└───────────────────────────────────────
+
+Last paragraph.
