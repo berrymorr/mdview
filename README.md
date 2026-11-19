@@ -169,3 +169,14 @@ make install    # build, then copy to ~/.local/bin (PREFIX=… to change)
 `make` uses `sudo -n docker`; set `DOCKER=docker` if your user may run it
 directly. The output tests compare against files in `tests/golden/`;
 `UPDATE_GOLDEN=1` rewrites them after an intended change.
+
+## Licence
+
+mdview is free software: you can redistribute it and change it under the
+terms of the GNU Affero General Public License, version 3 or (at your
+option) any later version. The text is in [LICENSE](LICENSE).
+
+The syntax definitions and themes for code blocks are
+[bat](https://github.com/sharkdp/bat)'s, built in by the
+[two-face](https://codeberg.org/CosmicHarper/two-face) crate. They and the
+Rust crates mdview is built from keep their own licences.

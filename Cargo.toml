@@ -4,6 +4,10 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.89"
 description = "A terminal viewer for Markdown: renders the markup instead of showing it"
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/berrymorr/mdview"
+# Not on crates.io, where the name belongs to another program.
+publish = false
 
 [dependencies]
 ansi_colours = "1.2.3"
