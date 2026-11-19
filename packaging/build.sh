@@ -46,9 +46,16 @@ mkdir -p "$out"
 tar --sort=name --owner=0 --group=0 --numeric-owner --mtime="@$SOURCE_DATE_EPOCH" \
     --transform="s|^files|$name|" -C target/package -cJf "$out/$name.tar.xz" files
 # nfpm takes the paths in nfpm.yaml from the directory it is started in.
-cd target/package
-for packager in deb rpm; do
-    VERSION=$version ARCH=$arch \
-        nfpm package --config ../../packaging/nfpm.yaml --packager "$packager" --target "$out/"
-done
+(
+    cd target/package
+    for packager in deb rpm; do
+        VERSION=$version ARCH=$arch \
+            nfpm package --config ../../packaging/nfpm.yaml --packager "$packager" --target "$out/"
+    done
+)
 ls -l "$out"
+
+# The compiled tree and the downloaded crates would go into the image layer
+# this step makes, gigabytes that no later step reads: only $out is copied
+# out of it.
+rm -rf target "${CARGO_HOME:-$HOME/.cargo}/registry" "${CARGO_HOME:-$HOME/.cargo}/git"
