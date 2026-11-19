@@ -35,6 +35,9 @@ WORKDIR /src
 COPY . .
 # The time the files in the packages carry: the commit's, given by the caller.
 ARG SOURCE_DATE_EPOCH
+# How many compile jobs cargo runs; unset, one per CPU it can see. A build
+# whose CPUs are capped by a quota sees them all, so it says how many.
+ARG JOBS
 RUN packaging/build.sh /out
 
 FROM scratch AS packages

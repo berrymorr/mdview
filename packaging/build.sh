@@ -14,6 +14,9 @@ case $target in
 esac
 : "${SOURCE_DATE_EPOCH:=$(date +%s)}"
 export SOURCE_DATE_EPOCH
+if [ -n "${JOBS:-}" ]; then
+    export CARGO_BUILD_JOBS="$JOBS"
+fi
 
 cargo test --release --locked --target "$target"
 cargo build --release --locked --target "$target"
