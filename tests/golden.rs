@@ -312,3 +312,29 @@ fn readme_lists_every_element_with_its_default() {
     let listed = stdout(run(&["--list-colors", "--color=never"], None));
     assert_eq!(documented, listed.lines().collect::<Vec<_>>());
 }
+
+/// What packaging/build.sh puts in the packages beside the binary. Only
+/// the packaging asks for these, so neither --help nor what it makes
+/// mentions --generate.
+#[test]
+fn generate_prints_the_man_page_completions_and_acknowledgements() {
+    for (what, expected) in [
+        ("man", ".TH mdview 1"),
+        ("bash", "complete -F _mdview"),
+        ("zsh", "#compdef mdview"),
+        ("fish", "complete -c mdview -l list-colors"),
+        (
+            "acknowledgements",
+            "syntaxes/02_Extra/AWK/LICENSE\n\nThe MIT License",
+        ),
+    ] {
+        let out = run(&["--generate", what], None);
+        assert!(out.status.success(), "{what}");
+        let text = stdout(out);
+        assert!(text.contains(expected), "{what}: {text}");
+        if what != "acknowledgements" {
+            assert!(!text.contains("generate"), "{what}: {text}");
+        }
+    }
+    assert!(!stdout(run(&["--help"], None)).contains("generate"));
+}

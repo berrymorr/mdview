@@ -6,6 +6,7 @@ use std::path::PathBuf;
 
 use clap::{Parser, ValueEnum};
 
+use crate::generate::Generate;
 use crate::style::Style;
 use crate::theme::Theme;
 
@@ -96,6 +97,9 @@ pub struct Args {
     /// Do not read the configuration file.
     #[arg(long)]
     pub no_config: bool,
+
+    #[arg(long, value_enum, value_name = "WHAT", hide = true)]
+    pub generate: Option<Generate>,
 }
 
 /// Parses the command line, after the configuration file's arguments so

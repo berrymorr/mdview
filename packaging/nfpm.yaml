@@ -1,0 +1,65 @@
+# The .deb and the .rpm, made by nfpm from the files packaging/build.sh
+# leaves in target/package, where it starts nfpm, giving it VERSION and
+# ARCH (amd64 or arm64).
+name: mdview
+version: ${VERSION}
+release: 1
+arch: ${ARCH}
+platform: linux
+section: text
+priority: optional
+maintainer: berrymorr <berrymorr@gmail.com>
+homepage: https://github.com/berrymorr/mdview
+license: AGPL-3.0-or-later
+description: |-
+  Terminal viewer for Markdown
+  mdview shows Markdown files in the terminal laid out instead of as raw
+  markup: headings, emphasis, lists, tables, block quotes, GitHub alerts,
+  footnotes, and code blocks highlighted with bat's syntax definitions and
+  themes. Paging and reading standard input work as in bat.
+# The pager it starts when the text does not fit on the screen.
+recommends:
+  - less
+
+contents:
+  - src: files/mdview
+    dst: /usr/bin/mdview
+    file_info:
+      mode: 0755
+  - src: mdview.1.gz
+    dst: /usr/share/man/man1/mdview.1.gz
+  - src: files/complete/mdview.bash
+    dst: /usr/share/bash-completion/completions/mdview
+  - src: files/complete/mdview.fish
+    dst: /usr/share/fish/vendor_completions.d/mdview.fish
+  # Debian's zsh looks in vendor-completions, everyone else's in site-functions.
+  - src: files/complete/_mdview
+    dst: /usr/share/zsh/vendor-completions/_mdview
+    packager: deb
+  - src: files/complete/_mdview
+    dst: /usr/share/zsh/site-functions/_mdview
+    packager: rpm
+  # nfpm leaves a file of the rpm-only type doc out of the .deb.
+  - src: files/README.md
+    dst: /usr/share/doc/mdview/README.md
+    packager: deb
+  - src: files/README.md
+    dst: /usr/share/doc/mdview/README.md
+    type: doc
+    packager: rpm
+  # Licences go with the documentation on Debian and in their own directory
+  # on Fedora and its kin.
+  - src: files/LICENSE
+    dst: /usr/share/doc/mdview/LICENSE
+    packager: deb
+  - src: files/THIRD-PARTY
+    dst: /usr/share/doc/mdview/THIRD-PARTY
+    packager: deb
+  - src: files/LICENSE
+    dst: /usr/share/licenses/mdview/LICENSE
+    type: license
+    packager: rpm
+  - src: files/THIRD-PARTY
+    dst: /usr/share/licenses/mdview/THIRD-PARTY
+    type: license
+    packager: rpm

@@ -1,5 +1,6 @@
 mod cli;
 mod code;
+mod generate;
 mod html;
 mod output;
 mod render;
@@ -28,6 +29,11 @@ fn main() {
 
 fn run() -> Result<i32, String> {
     let args = cli::parse();
+
+    if let Some(what) = args.generate {
+        generate::print(what)?;
+        return Ok(0);
+    }
 
     if args.list_themes {
         let mut list = String::new();

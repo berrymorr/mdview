@@ -13,6 +13,25 @@ mdview -P notes.md                # no pager
 mdview --color=always notes.md | less -R
 ```
 
+## Installing
+
+Each [release](https://github.com/berrymorr/mdview/releases) has packages
+for Linux on x86_64 (amd64) and arm64: a `.deb`, an `.rpm` and a
+`.tar.xz`. The program in them is a static binary, so one package suits
+every distribution of its kind, old or new, whatever its C library.
+
+```sh
+sudo apt install ./mdview_0.1.0-1_amd64.deb      # Debian, Ubuntu and their kin
+sudo dnf install ./mdview-0.1.0-1.x86_64.rpm     # Fedora, RHEL; zypper on openSUSE
+```
+
+The packages also install the man page and completions for bash, zsh and
+fish, and recommend `less`, the pager mdview starts. The `.tar.xz` holds
+the same files for anywhere else: `mdview` goes on your `PATH`, `mdview.1`
+and the files in `complete/` where your system keeps such things.
+`SHA256SUMS` beside them checks a download:
+`sha256sum -c --ignore-missing SHA256SUMS`.
+
 ## What it shows
 
 The dialect is GitHub's (GFM): tables, task lists, strikethrough, bare URLs
@@ -164,11 +183,13 @@ make test       # unit and output tests
 make lint       # rustfmt and clippy
 make build      # target/release/mdview
 make install    # build, then copy to ~/.local/bin (PREFIX=… to change)
+make package    # the .deb, .rpm and .tar.xz for this machine, in dist/
 ```
 
-`make` uses `sudo -n docker`; set `DOCKER=docker` if your user may run it
-directly. The output tests compare against files in `tests/golden/`;
-`UPDATE_GOLDEN=1` rewrites them after an intended change.
+`make` runs `docker`, or `sudo -n docker` when your user may not run it
+directly; `DOCKER=…` gives another command. The output tests compare
+against files in `tests/golden/`; `UPDATE_GOLDEN=1` rewrites them after an
+intended change.
 
 ## Licence
 
@@ -179,4 +200,5 @@ option) any later version. The text is in [LICENSE](LICENSE).
 The syntax definitions and themes for code blocks are
 [bat](https://github.com/sharkdp/bat)'s, built in by the
 [two-face](https://codeberg.org/CosmicHarper/two-face) crate. They and the
-Rust crates mdview is built from keep their own licences.
+Rust crates mdview is built from keep their own licences, given in full in
+`THIRD-PARTY` in every package.

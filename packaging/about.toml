@@ -1,0 +1,53 @@
+# cargo-about's settings for section 1 of THIRD-PARTY. A crate under a
+# licence not accepted here stops the build, to be looked at before it ships.
+accepted = [
+    "MIT",
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "Zlib",
+    "Unicode-3.0",
+    "LGPL-3.0-or-later",
+]
+targets = ["x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"]
+ignore-build-dependencies = true
+ignore-dev-dependencies = true
+# mdview itself, whose licence is LICENSE.
+private = { ignore = true }
+
+# Crates whose licence files cargo-about cannot match to its own copies of
+# the licences, so that it would print its copies instead: comrak's COPYING,
+# which also holds the notices of the code comrak derives from;
+# ansi_colours's LICENSE, the LGPL without the GPL cargo-about's copy
+# appends; and finl_unicode, which names the Unicode licence of 2016 but
+# ships version 3. Each checksum is the file's sha256, so a new version of
+# one of them with a changed file stops the build until it is read and its
+# checksum moved.
+[comrak.clarify]
+license = "BSD-2-Clause"
+[[comrak.clarify.files]]
+path = "COPYING"
+license = "BSD-2-Clause"
+checksum = "27293e2353ce5d83e07331ffc423051908b062787d148193b8927d50d9873bd5"
+
+[ansi_colours.clarify]
+license = "LGPL-3.0-or-later"
+[[ansi_colours.clarify.files]]
+path = "LICENSE"
+license = "LGPL-3.0-or-later"
+checksum = "e3a994d82e644b03a792a930f574002658412f62407f5fee083f2555c5f23118"
+
+[finl_unicode.clarify]
+license = "(MIT OR Apache-2.0) AND Unicode-3.0"
+[[finl_unicode.clarify.files]]
+path = "LICENSE-MIT"
+license = "MIT"
+checksum = "23f18e03dc49df91622fe2a76176497404e46ced8a715d9d2b67a7446571cca3"
+[[finl_unicode.clarify.files]]
+path = "LICENSE-APACHE"
+license = "Apache-2.0"
+checksum = "62c7a1e35f56406896d7aa7ca52d0cc0d272ac022b5d2796e7d6905db8a3636a"
+[[finl_unicode.clarify.files]]
+path = "LICENSE-UNICODE"
+license = "Unicode-3.0"
+checksum = "361d7912957842f2ce61c774b14afba41ae91df84882982e6f7e749e01c07c91"
