@@ -191,6 +191,14 @@ directly; `DOCKER=…` gives another command. The output tests compare
 against files in `tests/golden/`; `UPDATE_GOLDEN=1` rewrites them after an
 intended change.
 
+## Releases
+
+Changes go to the `dev` branch. A pull request from `dev` into `master` is
+built and tested on amd64 and arm64 by a GitLab pipeline, whose result
+shows on the pull request. Merging it releases the version in `Cargo.toml`
+here on GitHub, packages included, unless that version is out already: a
+new release is a new version on `dev` and a merged pull request.
+
 ## Licence
 
 mdview is free software: you can redistribute it and change it under the
